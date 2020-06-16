@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400&display=swap');
+
+*{
+    box-sizing: border-box;
+    margin: 0%;
+    padding: 0%;
+}
+
+html,body{
+        
+    height: 100%;
+    background-color: #e9ecef;
+    font-family:'Roboto Slab',serif;
+}
+
+
+th{
+
+    font-weight: 450 !important;
+}
+
+
+
+td{
+    vertical-align: middle !important;
+    padding: 0.5rem !important;
+}
+
+input.form-control:focus{
+    
+    font-size: 0.95rem;
+    border: 1px solid #ced4da;
+    box-shadow: 1px 2px #ced4da ;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+
+}
+
+table{
+    font-size: 0.95rem;
+}
+
+
+@media(max-width:650px){
+
+    div.form ,div.task-table{
+        width: 90% !important;
+    }
+
+    
+}

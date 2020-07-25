@@ -183,12 +183,13 @@ function calculateDueIn(duedate){ //Calculate DueIn
         }
         else{
 
-            dueInMins = (dueInHours - Math.floor(dueInHours))/60;
-            if(Math.round(dueInMins)===60){
+            dueInMins = (dueInHours - Math.floor(dueInHours))*60;
+            console.log(dueInMins);
+            if(Math.round(dueInMins) === 60){
                 return `${Math.round(dueInHours)} Hours`;
             }
             else{
-                return `${Math.floor(dueInHours)} Hours ${Math.round(dueInMins)} Mins`;
+                return `${Math.floor(dueInHours)} Hours ${Math.ceil(dueInMins)} Mins`;
             }
             
         }

@@ -185,7 +185,7 @@ function calculateDueIn(duedate){ //Calculate DueIn
 
             dueInMins = (dueInHours - Math.floor(dueInHours))*60;
             console.log(dueInMins);
-            if(Math.round(dueInMins) === 60){
+            if(dueInMins > 59){
                 return `${Math.round(dueInHours)} Hours`;
             }
             else{

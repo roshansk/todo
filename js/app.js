@@ -190,7 +190,12 @@ function calculateDueIn(duedate){ //Calculate DueIn
     }
     else{
         dueInHours = (dueInDays - Math.floor(dueInDays))*24; 
-        return `${Math.floor(dueInDays)} Days ${Math.round(dueInHours)} Hours`;
+        if(Math.round(dueInHours) === 24){
+            return `${Math.round(dueInDays)} Days`;
+        }
+        else{
+            return `${Math.floor(dueInDays)} Days ${Math.round(dueInHours)} Hours`;
+        }
     }
 
        

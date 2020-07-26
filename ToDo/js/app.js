@@ -31,7 +31,7 @@ class UI{
         dueIn === 'Past Due.' ? tr.classList.add('table-danger') : tr.className = ''; 
 
         tr.innerHTML = `
-        <td>${taskName}</td>
+        <td id="task-text" class="px-2">${taskName}</td>
         <td>${dueIn}</td>
         <td><a class ="btn close">&times;</a></td>`;
 

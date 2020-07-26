@@ -39,6 +39,10 @@ table{
     font-size: 0.95rem;
 }
 
+td#task-text{
+    word-break: break-word;
+}
+
 
 @media(max-width:650px){
 

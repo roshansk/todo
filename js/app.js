@@ -1,7 +1,8 @@
 // Class Tasks
 class Task{
 
-    constructor(taskName,dueDate,dueIn){
+    constructor(id,taskName,dueDate,dueIn){
+        this.id = id;
         this.taskName = taskName;
         this.dueDate = dueDate;
         this.dueIn = dueIn;
@@ -12,30 +13,33 @@ class Task{
 class UI{
 
     static displayTasks(){
-
+        const container  = document.getElementById('todo-list');
+        container.innerHTML ="";
         const storedTasks = Storage.getTasks();
         const tasks = storedTasks;
 
         tasks.forEach( task => {
-            const {taskName,dueIn} = task;
-            UI.addTaskToList(taskName,dueIn);
+            UI.addTaskToList(task);
 
         });
     }
 
-    static  addTaskToList(taskName,dueIn){
+    static  addTaskToList(task){
 
-        const tr = document.createElement('tr');
-        const taskTable  = document.getElementById('table-body');
+        const {id,taskName,dueIn} = task;
+        const tasksContainer = document.createElement('div');
+        tasksContainer.id = id;
+        const container  = document.getElementById('todo-list');
+        tasksContainer.className = "task-container d-flex py-2 px-3 justify-content-between border shadow-sm"
 
-        dueIn === 'Past Due.' ? tr.classList.add('table-danger') : tr.className = ''; 
+        dueIn == 'Past Due.' ? tasksContainer.classList.add('past-due') : tasksContainer.classList.add('due');
 
-        tr.innerHTML = `
-        <td id="task-text" class="px-2">${taskName}</td>
-        <td>${dueIn}</td>
-        <td><a class ="btn close">&times;</a></td>`;
+        tasksContainer.innerHTML = `
+        <span class="my-auto task-text">${taskName}</span>
+        <span class="my-auto task-due-in">${dueIn}</span>
+        <a class="btn my-auto delete-task" onclick="UI.deleteTask(${id})"><i class="fas fa-trash fa-xs"></i></a>`;
 
-        taskTable.appendChild(tr);
+       container.appendChild(tasksContainer);
 
     }
 
@@ -44,7 +48,7 @@ class UI{
         const form = document.querySelector('#task-form');
         const div = document.createElement('div');
         const txtNode = document.createTextNode(msg);
-        div.className = `alert alert-${classname}`;
+        div.className = `alert my-2 alert-sm alert-${classname}`;
 
         div.appendChild(txtNode);
         form.appendChild(div);
@@ -60,6 +64,90 @@ class UI{
     static clearFields(){
         const form = document.querySelector('#task-form');
         form.reset();
+    }
+
+    static getTime(){
+
+        const now = new Date();
+        const timeContainer = document.querySelector('span#time');
+        let min = now.getMinutes()
+        let hour = Math.floor(now.getHours()) > 12 ? Math.floor(now.getHours()-12) : Math.floor(now.getHours());
+        let midday;
+        const timeSpan = document.createElement('span');
+        timeSpan.className = "fs-2 ms-1";
+        const middaySpan = document.createElement('span');
+        middaySpan.className = "fs-6";
+        now.getHours() > 11 ? midday = "PM" : midday = "AM";
+        middaySpan.innerHTML = midday;
+        timeSpan.innerHTML = `${hour < 10 ? "0"+hour : hour}:${min < 10 ? "0"+min : min }`
+        timeSpan.append(middaySpan);
+        timeContainer.innerHTML ="";
+        timeContainer.appendChild(timeSpan);        
+    }
+
+    static getDate(){
+        const now = new Date();
+        const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+        const months = ["January","February","March","April","May","June","July","September","October","November","December"];
+        const dayContainer = document.querySelector('span#day');
+        const dateContainer = document.querySelector('p#date');
+        let day = days[now.getDay()];
+        let date = now.getDate();
+        let month = months[now.getMonth()];
+        let year =  now.getFullYear();
+        let dateSuffix = this.getNumberSuffix(now.getDate());
+        const daySpan = document.createElement('span');
+        daySpan.className = "fs-3";
+        daySpan.innerHTML = day;
+        dayContainer.appendChild(daySpan);
+        dateContainer.innerHTML = `${date}${dateSuffix} ${month} ${year}`;
+
+        if(now.getHours() >= 5 && now.getHours() <= 16 ){
+            document.querySelector('.date-time').classList.add(['day']);    
+        }
+        else{
+            const night = ['night','text-light']
+            document.querySelector('.date-time').classList.add(...night);
+
+        }
+    }
+
+    static getNumberSuffix(number){
+        const tempString = number.toString();
+        const nthChar = tempString[tempString.length-1];
+        if(nthChar == "1"){
+            return "st";
+        }
+        else if(nthChar == "2"){
+            return "nd";
+        }
+        else if(nthChar == "3"){
+            return "rd"
+        }
+        else{
+            return "th";
+        }
+    }
+
+    static toggleForm(){
+        const todoForm = document.querySelector('.todo-form');
+        const icon = document.querySelector('#toggle-form-icon') 
+        if(todoForm.style.display == 'block'){
+            todoForm.classList.replace('show','hide');
+            todoForm.style.display = '';
+            icon.classList.replace('fa-times','fa-pen');
+        }    
+        else{
+            todoForm.classList.replace('hide','show');
+            todoForm.style.display = 'block';
+            icon.classList.replace('fa-pen','fa-times');
+        }
+    
+    }
+
+    static deleteTask(id){
+        document.getElementById(id).remove();
+        Storage.deleteTask(id);
     }
 
 }
@@ -103,14 +191,12 @@ class Storage{
         localStorage.setItem('tasks',JSON.stringify(tasks));
     }
 
-    static deleteTask(row){
+    static deleteTask(id){
 
         const tasks = Storage.getTasks();
-        const taskName = row.firstElementChild.innerText;
-        const dueIn = row.firstElementChild.nextElementSibling.innerText;
         tasks.forEach((task,index) => {
 
-            if(task.taskName === taskName && task.dueIn === dueIn){
+            if(task.id == id){
                 tasks.splice(index,1);
             }
         });
@@ -143,10 +229,11 @@ document.getElementById('task-form').addEventListener('submit', (e) =>{ //submit
         }
         else{
             const dueIn =  calculateDueIn(dueDate);
-            const task = new Task(taskName,dueDate,dueIn);
-    
+            const id =  Math.floor(Math.random()*1000);
+            const task = new Task(id,taskName,dueDate,dueIn);
             
-            UI.addTaskToList(taskName,dueIn);
+            
+            UI.addTaskToList(task);
             UI.showAlert('Task Added','primary');
             Storage.addTask(task);
             UI.clearFields();
@@ -157,8 +244,7 @@ document.getElementById('task-form').addEventListener('submit', (e) =>{ //submit
 } ); 
 
 
-window.addEventListener('DOMContenLoaded', Storage.refreshTasks()); //Refresh tasks
-window.addEventListener('DOMContenLoaded', UI.displayTasks());  //Display tasks
+window.addEventListener('DOMContenLoaded', [UI.getDate(),Storage.refreshTasks(),setInterval(UI.displayTasks(),1000),setInterval(UI.getTime(),1000)]); //Refresh tasks  //Display tasks
 
 
 
@@ -179,7 +265,7 @@ function calculateDueIn(duedate){ //Calculate DueIn
         
         if(dueInHours < 1){
 
-            return `${Math.round(dueInMins)} Mins`;
+            return `${Math.round(dueInMins)} Min`;
         }
         else{
 
@@ -189,7 +275,7 @@ function calculateDueIn(duedate){ //Calculate DueIn
                 return `${Math.round(dueInHours)} Hours`;
             }
             else{
-                return `${Math.floor(dueInHours)} Hours ${Math.ceil(dueInMins)} Mins`;
+                return `${Math.floor(dueInHours)} Hours ${Math.ceil(dueInMins)} Min`;
             }
             
         }
@@ -201,23 +287,23 @@ function calculateDueIn(duedate){ //Calculate DueIn
             return `${Math.round(dueInDays)} Days`;
         }
         else{
-            return `${Math.floor(dueInDays)} Days ${Math.round(dueInHours)} Hours`;
+            return `${Math.floor(dueInDays)} Days`;
         }
     }
 
        
 }
 
-document.querySelector('#table-body').addEventListener('click', (e) => {  //Remove Task
+// document.querySelector('').addEventListener('click', (e) => {  //Remove Task
 
-    let el = e.target;
+//     let el = e.target;
     
-    if(el.classList.contains('close')){
-        let row = el.parentElement.parentElement;
-        Storage.deleteTask(row);
-        row.remove();
-        UI.showAlert('Task Removed','info');
-    }
+//     if(el.classList.contains('close')){
+//         let row = el.parentElement.parentElement;
+//         Storage.deleteTask(row);
+//         row.remove();
+//         UI.showAlert('Task Removed','info');
+//     }
 
-});
+// });
 

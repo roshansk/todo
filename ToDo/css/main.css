@@ -2,53 +2,154 @@
 
 *{
     box-sizing: border-box;
-    margin: 0%;
-    padding: 0%;
+    margin: 0;
+    padding: 0;
 }
 
 html,body{
         
-    height: 100%;
-    background-color: #e9ecef;
-    font-family:'Roboto Slab',serif;
+    background-color: #f4f4f4;
+} 
+
+/* *{
+    border: 2px solid #eb0029 ;
+}*/
+
+main#main{
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    gap:2rem;
+}
+
+#btn-toggle-form{
+    display: none;
+}
+
+div.date-time > p{
+    margin-bottom: 0px;
 }
 
 
-th{
+div.date-time.day{
+    background: url('../assets/datetime-day.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: #252525;
+}
 
-    font-weight: 450 !important;
+div.date-time.night{
+    background: url('../assets/datetime-night.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    color:#fff;
 }
 
 
-
-td{
-    vertical-align: middle !important;
-    padding: 0.5rem !important;
+span#day::before{
+    content: "Today`s";
+    display: block;
+    font-size: inherit;
+    font: 500;
+    opacity: 0.9;
 }
 
-input.form-control:focus{
-    
-    font-size: 0.95rem;
-    border: 1px solid #ced4da;
-    box-shadow: 1px 2px #ced4da ;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-
-}
-
-table{
-    font-size: 0.95rem;
-}
-
-td#task-text{
-    word-break: break-word;
+span#day{
+    opacity: 0.9;
 }
 
 
-@media(max-width:650px){
+div#todo-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(250px,auto));
+    gap: 1.2rem;
+}
 
-    div.form ,div.task-table{
-        width: 90% !important;
+div.task-container{
+    position: relative;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+span.task-text{
+    word-break: break-all;
+}
+
+span.task-due-in{
+    font-size: 0.7rem;
+    position: absolute;
+    right: 0;
+    bottom: -15px;
+}
+
+div.task-container::after{
+    content: "";
+    height: 3px;
+    width: 35%;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    border-top-left-radius: 3px;
+}
+
+div.task-container.due::after{
+    background-color: #0d6efd;
+}
+
+div.task-container.past-due::after{
+    background-color: #eb0029;
+}
+
+div.task-container.past-due .fa-trash{
+    color: #eb0029;
+}
+
+div.task-container.due .fa-trash{
+    color: #0d6efd;
+}
+
+
+@media screen and (max-width:768px) {
+
+    main#main{
+        grid-template-columns: 1fr;
     }
 
     
+    #btn-toggle-form{
+        display: block;
+        position: sticky;
+        height: 45px;
+        width: 45px;
+        border-radius: 50%;
+        bottom: 20px;
+        left: 90%;
+    }
+
+    div.todo-form.show{
+        display: block;
+        animation: fade 0.6s ease-in;
+    }
+
+    div.todo-form.hide{
+        display: none;
+        animation: fade 0.6s ease-out reverse;
+    }
+
+    @keyframes fade {
+        from{
+            transform: translateY(-100px);
+            opacity: 0;
+        }
+        to{
+            transform: translateY(0px);
+            opacity: 1;
+        }
+    }
+
+}
+
+@media screen and (min-width:768px) {
+    div.todo-form.hide{
+        display: block;
+    }
 }

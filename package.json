@@ -9,8 +9,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "homepage":"https://roshansk.github.io/todo",
+  "homepage": "https://roshansk.github.io/todo",
   "dependencies": {
-    "gh-pages": "^3.0.0"
+    "gh-pages": "^3.2.3"
   }
 }
